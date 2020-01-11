@@ -1,0 +1,107 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven { url = "https://files.minecraftforge.net/maven" }
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+
+    }
+
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
+    }
+
+}
+
+
+allprojects {
+    repositories {
+        jcenter()
+        maven { url 'https://jitpack.io' }
+        maven {
+            name = 'spongepowered-repo'
+            url = 'http://repo.spongepowered.org/maven/'
+        }
+        mavenCentral()
+    }
+}
+
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'maven'
+
+
+version = "0.0.1"
+// http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group = "java.omegadevs"
+archivesBaseName = "examplemodpack"
+
+sourceCompatibility = targetCompatibility = '1.8'
+
+
+
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
+}
+
+minecraft {
+    version = "1.12.2-14.23.5.2838"
+    runDir = "run"
+    mappings = "snapshot_20171003"
+}
+
+
+task moveLibraryModToMods(type: Copy) {
+    dependsOn build
+    from configurations.runtime
+    include 'McDevLib*.jar'
+    include 'Omega*.jar'
+    into 'mods'
+}
+
+dependencies {
+
+    compile 'com.github.WalkingLibrary:Dev-Lib:1.1.0'
+    compile 'com.github.WalkingLibrary:McDevLib:1.0.2'
+    compile 'com.github.WalkingLibrary:Omega-Utility:1.0.0'
+    compile 'com.github.classgraph:classgraph:28b32ec'
+    runtime 'org.spongepowered:spongeapi:8.0.0-SNAPSHOT'
+    runtime("org.spongepowered:mixin:0.7.11-SNAPSHOT")
+            {
+                exclude module: "launchwrapper"
+            }
+}
+
+
+reobf {
+    shadowJar {
+        mappingType = 'SEARGE'
+        classpath = sourceSets.main.compileClasspath
+    }
+}
+
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+
+        expand 'version': project.version, 'mcversion': project.minecraft.version
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+
+
+

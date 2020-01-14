@@ -3,7 +3,7 @@
 ![Build Status](https://img.shields.io/badge/Build-Passing-green)
 
 
-Tutorial Video - WIP
+Tutorial Video - https://youtu.be/CuGErLji92k
 
 
 
